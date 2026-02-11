@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sibam Dash - Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==================== CSS VARIABLES & RESET ==================== */
+        :root {
+            --bg: #0a0a0a;
+            --fg: #f0f0f0;
+            --accent: #00ff41;
+            --accent-dim: #00ff4133;
+            --border: #333;
+            --card-bg: #0a0a0a;
+            --hover: #1a1a1a;
+            --danger: #ff0041;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg);
+            color: var(--fg);
+            overflow-x: hidden;
+            line-height: 1.6;
+            min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* ==================== TYPOGRAPHY ==================== */
+        h1, h2, h3 {
+            font-family: 'Bebas Neue', sans-serif;
+            text-transform: uppercase;
+        }
+
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        /* ==================== BUTTONS ==================== */
+        button {
+            background: transparent;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            padding: 0.75rem 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 100%; height: 100%;
+            background: var(--accent);
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+
+        button:hover::before { left: 0; }
+        button:hover { color: var(--bg); box-shadow: 0 0 15px var(--accent-dim); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
+
+        .icon-btn {
+            width: 2.5rem; height: 2.5rem; padding: 0; border-color: var(--border); color: var(--fg);
+        }
+        .icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .icon-btn::before { display: none; }
+
+        .delete-btn {
+            border-color: var(--danger); color: var(--danger); padding: 0.25rem 0.75rem; font-size: 0.75rem;
+        }
+        .delete-btn:hover { background: var(--danger); color: white; }
+        .delete-btn::before { background: var(--danger); }
+
+        /* ==================== HEADER ==================== */
+        header {
+            position: sticky; top: 0; z-index: 100;
+            background: var(--bg);
+            border-bottom: 2px solid var(--accent);
+            padding: 1rem 2rem;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        h1 {
+            font-size: 2.5rem; letter-spacing: 2px; color: var(--accent);
+            text-shadow: 0 0 10px var(--accent-dim);
+        }
+
+        .header-controls { display: flex; gap: 1rem; }
+
+        /* ==================== MAIN LAYOUT ==================== */
+        main { padding: 2rem; max-width: 1600px; margin: 0 auto; }
+
+        /* ==================== ABOUT PAGE ==================== */
+        .about-page {
+            display: flex; align-items: center; justify-content: center;
+            min-height: calc(100vh - 120px); padding: 2rem;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .about-page-content {
+            width: 100%; max-width: 900px;
+            background: var(--card-bg); border: 2px solid var(--accent);
+            padding: 3rem; position: relative;
+        }
+
+        .about-page-header {
+            text-align: center; margin-bottom: 2rem; border-bottom: 2px solid var(--accent); padding-bottom: 2rem;
+        }
+
+        .about-page-header h2 {
+            font-size: 3.5rem; color: var(--accent); margin: 0;
+            text-shadow: 0 0 20px var(--accent-dim);
+        }
+
+        [contenteditable="true"] {
+            cursor: text; padding: 0.25rem; border: 2px solid transparent; transition: 0.3s;
+        }
+        [contenteditable="true"]:hover { border-color: var(--border); }
+        [contenteditable="true"]:focus { outline: none; border-color: var(--accent); background: var(--hover); }
+
+        .about-page-text { font-size: 1.1rem; margin-bottom: 3rem; text-align: justify; min-height: 100px; }
+
+        .about-page-details {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;
+        }
+
+        .about-detail-item {
+            padding: 1rem; border: 1px solid var(--border); transition: 0.3s;
+        }
+        .about-detail-item:hover { border-color: var(--accent); }
+
+        .about-detail-label {
+            font-size: 0.75rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem;
+        }
+
+        /* ==================== SECTIONS & PROJECTS ==================== */
+        .section-container {
+            margin-bottom: 3rem; border: 2px solid var(--border);
+            background: var(--card-bg); position: relative;
+            opacity: 0; animation: slideUp 0.5s ease forwards;
+        }
+        
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } from { opacity: 0; transform: translateY(20px); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .section-container.dragging { opacity: 0.5; cursor: grabbing; border-color: var(--accent); }
+
+        .section-header {
+            padding: 1.5rem 2rem; background: var(--bg);
+            border-bottom: 2px solid var(--accent);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .section-title {
+            font-size: 1.75rem; color: var(--fg); display: flex; align-items: center; gap: 1rem; cursor: grab;
+        }
+        .section-title:active { cursor: grabbing; }
+
+        .drag-handle { font-size: 1.5rem; color: var(--accent); user-select: none; }
+        .section-title-text:focus { background: var(--hover); }
+
+        .projects-scroll {
+            display: flex; gap: 1.5rem; padding: 2rem; overflow-x: auto;
+            scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--accent) var(--bg);
+        }
+        .projects-scroll::-webkit-scrollbar { height: 8px; }
+        .projects-scroll::-webkit-scrollbar-track { background: var(--bg); }
+        .projects-scroll::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+
+        /* ==================== PROJECT CARD ==================== */
+        .project-card {
+            flex: 0 0 350px; background: var(--bg); border: 2px solid var(--border);
+            padding: 0; position: relative; transition: all 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+
+        .project-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 30px var(--accent-dim);
+            transform: translateY(-5px);
+        }
+
+        .project-thumbnail {
+            width: 100%; height: 180px; background: var(--card-bg);
+            border-bottom: 1px solid var(--border); overflow: hidden; position: relative;
+        }
+
+        .project-thumbnail img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+
+        .project-thumbnail-placeholder {
+            width: 100%; height: 100%; display: flex; align-items: center;
+            justify-content: center; color: var(--border); font-size: 3rem;
+        }
+
+        .project-content {
+            padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column;
+        }
+
+        .project-card h3 {
+            font-size: 1.5rem; margin-bottom: 0.5rem; letter-spacing: 1px; color: var(--accent);
+        }
+
+        .project-url {
+            font-size: 0.85rem; color: var(--accent); margin-bottom: 1rem;
+            word-break: break-all; opacity: 0.7;
+        }
+
+        .project-description {
+            font-size: 0.9rem; margin-bottom: 1rem; color: #999; flex-grow: 1;
+        }
+
+        .project-meta {
+            display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: auto;
+        }
+
+        .tag {
+            font-size: 0.75rem; padding: 0.25rem 0.75rem;
+            border: 1px solid var(--accent); color: var(--accent);
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+
+        .project-actions {
+            position: absolute; top: 1rem; right: 1rem;
+            display: flex; gap: 0.5rem; z-index: 10;
+        }
+
+        /* ==================== ADD PROJECT CARD ==================== */
+        .add-project-card {
+            flex: 0 0 350px; background: transparent;
+            border: 2px dashed var(--border); padding: 1.5rem;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.3s ease; height: 350px;
+        }
+
+        .add-project-card:hover {
+            border-color: var(--accent); background: var(--hover);
+        }
+
+        .add-project-icon {
+            font-size: 4rem; color: var(--border); transition: color 0.3s;
+        }
+
+        .add-project-card:hover .add-project-icon {
+            color: var(--accent);
+        }
+
+        /* ==================== MODAL ==================== */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.9); z-index: 1000;
+            justify-content: center; align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active { display: flex; }
+
+        .modal-content {
+            background: var(--card-bg); border: 2px solid var(--accent);
+            padding: 2rem; max-width: 600px; width: 90%;
+            max-height: 90vh; overflow-y: auto;
+            animation: slideDown 0.3s ease;
+        }
+
+        .modal-content.large {
+            max-width: 800px;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal h2 {
+            font-family: 'Bebas Neue', sans-serif; font-size: 2rem;
+            margin-bottom: 1.5rem; color: var(--accent); letter-spacing: 2px;
+        }
+
+        .form-group { margin-bottom: 1.5rem; }
+
+        label {
+            display: block; margin-bottom: 0.5rem; color: var(--accent);
+            text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;
+        }
+
+        input, textarea, select {
+            width: 100%; background: var(--bg); border: 2px solid var(--border);
+            color: var(--fg); padding: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none; border-color: var(--accent);
+        }
+
+        textarea { resize: vertical; min-height: 100px; }
+
+        .modal-actions {
+            display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;
+        }
+
+        /* ==================== CUSTOMIZE PANEL ==================== */
+        .customize-panel {
+            position: fixed; right: -400px; top: 0; bottom: 0; width: 400px;
+            background: var(--card-bg); border-left: 2px solid var(--accent);
+            padding: 2rem; overflow-y: auto; transition: right 0.3s ease; z-index: 200;
+        }
+
+        .customize-panel.active { right: 0; }
+
+        .color-picker {
+            display: flex; gap: 1rem; align-items: center;
+        }
+
+        .color-preview {
+            width: 50px; height: 50px; border: 2px solid var(--border); cursor: pointer;
+        }
+
+        input[type="color"] {
+            width: 50px; height: 50px; padding: 0; border: none; cursor: pointer;
+        }
+
+        /* ==================== NOTIFICATION ==================== */
+        #notification-area {
+            position: fixed; top: 80px; right: 20px; z-index: 1001;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+
+        .notification {
+            background: var(--accent); color: var(--bg);
+            padding: 1rem 1.5rem; border-radius: 4px;
+            font-weight: 700; animation: slideIn 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .notification.error {
+            background: var(--danger);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* ==================== HIDE/SHOW PAGES ==================== */
+        .page { display: none; }
+        .page.active { display: block; }
+    </style>
+</head>
+<body>
+    <!-- Notification Area -->
+    <div id="notification-area"></div>
+
+    <!-- Header -->
+    <header>
+        <h1>SIBAM DASH</h1>
+        <div class="header-controls">
+            <button id="aboutBtn" onclick="switchPage('about')">About</button>
+            <button id="projectsBtn" onclick="switchPage('projects')">Projects</button>
+            <button onclick="window.toggleOptions()">⚙️</button>
+            <button onclick="openModal('backupModal')">💾</button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- About Page -->
+        <div id="aboutPage" class="page active">
+            <div class="about-page">
+                <div class="about-page-content">
+                    <div class="about-page-header">
+                        <h2 id="aboutPageTitle" contenteditable="false">About Me</h2>
+                    </div>
+                    <div id="aboutPageText" class="about-page-text" contenteditable="false">
+                        Click to write about yourself, your experience, skills, and what makes you unique.
+                    </div>
+                    <div class="about-page-details">
+                        <div class="about-detail-item">
+                            <div class="about-detail-label">Email</div>
+                            <div id="displayEmail" class="about-detail-value" contenteditable="false">your@email.com</div>
+                        </div>
+                        <div class="about-detail-item">
+                            <div class="about-detail-label">Location</div>
+                            <div id="displayLocation" class="about-detail-value" contenteditable="false">Your City, Country</div>
+                        </div>
+                        <div class="about-detail-item">
+                            <div class="about-detail-label">GitHub</div>
+                            <div id="displayGithub" class="about-detail-value" contenteditable="false">github.com/yourusername</div>
+                        </div>
+                        <div class="about-detail-item">
+                            <div class="about-detail-label">LinkedIn</div>
+                            <div id="displayLinkedin" class="about-detail-value" contenteditable="false">linkedin.com/in/yourprofile</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Projects Page -->
+        <div id="projectsPage" class="page">
+            <div style="margin-bottom: 2rem;">
+                <button onclick="requireAuth(() => openModal('sectionModal'))" style="width: 100%;">
+                    ➕ Add New Section
+                </button>
+            </div>
+            <div id="sectionsContainer"></div>
+        </div>
+    </main>
+
+    <!-- Password Modal -->
+    <div id="passwordModal" class="modal">
+        <div class="modal-content">
+            <h2>Enter Password</h2>
+            <form id="passwordForm">
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="passwordInput" required autofocus>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" onclick="closeModal('passwordModal')">Cancel</button>
+                    <button type="submit">Unlock</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div id="changePasswordModal" class="modal">
+        <div class="modal-content">
+            <h2>Change Password</h2>
+            <form id="changePasswordForm">
+                <div class="form-group">
+                    <label>Current Password</label>
+                    <input type="password" id="currentPassInput" required>
+                </div>
+                <div class="form-group">
+                    <label>New Password</label>
+                    <input type="password" id="newPassInput" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" onclick="closeModal('changePasswordModal')">Cancel</button>
+                    <button type="submit">Update Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Section Modal -->
+    <div id="sectionModal" class="modal">
+        <div class="modal-content">
+            <h2>Create Section</h2>
+            <form id="sectionForm">
+                <div class="form-group">
+                    <label>Section Name *</label>
+                    <input type="text" id="sectionName" required placeholder="e.g. Web Apps">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="sectionDescription" placeholder="Brief description..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" onclick="closeModal('sectionModal')">Cancel</button>
+                    <button type="submit">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Project Modal -->
+    <div id="projectModal" class="modal">
+        <div class="modal-content">
+            <h2>Add Project</h2>
+            <form id="projectForm">
+                <input type="hidden" id="currentSectionId">
+                <div class="form-group">
+                    <label>Project Type *</label>
+                    <select id="projectType" onchange="updateProjectTypeLabel()">
+                        <option value="live">Live Website</option>
+                        <option value="github">GitHub Repository</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label id="urlLabel">URL *</label>
+                    <input type="url" id="projectUrl" required placeholder="https://...">
+                </div>
+                <div class="form-group">
+                    <label>Project Name *</label>
+                    <input type="text" id="projectName" required placeholder="My Awesome Project">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="projectDescription" placeholder="What did you build?"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Tags (comma separated)</label>
+                    <input type="text" id="projectTags" placeholder="React, Firebase, Node.js">
+                </div>
+                <div class="form-group">
+                    <label>Thumbnail URL</label>
+                    <input type="url" id="projectThumbnail" placeholder="https://...">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" onclick="closeModal('projectModal')">Cancel</button>
+                    <button type="submit">Add Project</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- About Edit Modal -->
+    <div id="aboutModal" class="modal">
+        <div class="modal-content large">
+            <h2>Edit About Page</h2>
+            <form id="aboutForm">
+                <div class="form-group">
+                    <label>Page Title</label>
+                    <input type="text" id="aboutTitleInput">
+                </div>
+                <div class="form-group">
+                    <label>Bio Text</label>
+                    <textarea id="aboutTextInput" rows="6"></textarea>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="aboutEmailInput">
+                    </div>
+                    <div class="form-group">
+                        <label>Location</label>
+                        <input type="text" id="aboutLocationInput">
+                    </div>
+                    <div class="form-group">
+                        <label>GitHub</label>
+                        <input type="text" id="aboutGithubInput">
+                    </div>
+                    <div class="form-group">
+                        <label>LinkedIn</label>
+                        <input type="text" id="aboutLinkedinInput">
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" onclick="closeModal('aboutModal')">Cancel</button>
+                    <button type="submit">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Backup Modal -->
+    <div id="backupModal" class="modal">
+        <div class="modal-content">
+            <h2>Backup & Restore</h2>
+            
+            <div class="form-group">
+                <label>Export Data</label>
+                <p style="font-size: 0.85rem; color: #888; margin-bottom: 10px;">Save a local copy of your portfolio.</p>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="exportJSON()" style="flex: 1;" type="button">Export JSON</button>
+                    <button onclick="exportTOML()" style="flex: 1;" type="button">Export TOML</button>
+                </div>
+            </div>
+
+            <hr style="margin: 2rem 0; border: 0; border-top: 1px solid var(--border);">
+
+            <div class="form-group">
+                <label>Import Data</label>
+                <p style="font-size: 0.85rem; color: #888; margin-bottom: 10px;">Restore from a previous backup.</p>
+                <button onclick="importBackup()" style="width: 100%;" type="button">Select File to Import</button>
+            </div>
+
+            <div class="modal-actions">
+                <button onclick="closeModal('backupModal')" style="width: 100%;" type="button">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Options Panel -->
+    <div id="optionsPanel" class="customize-panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h2>Customize</h2>
+            <button class="icon-btn" onclick="window.toggleOptions()">×</button>
+        </div>
+        
+        <div class="form-group">
+            <label>Text Color</label>
+            <div class="color-picker">
+                <input type="color" id="textColor" value="#f0f0f0">
+                <div class="color-preview" id="textPreview" onclick="document.getElementById('textColor').click()"></div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Background Color</label>
+            <div class="color-picker">
+                <input type="color" id="bgColor" value="#0a0a0a">
+                <div class="color-preview" id="bgPreview" onclick="document.getElementById('bgColor').click()"></div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Lines & Accent Color</label>
+            <div class="color-picker">
+                <input type="color" id="accentColor" value="#00ff41">
+                <div class="color-preview" id="accentPreview" onclick="document.getElementById('accentColor').click()"></div>
+            </div>
+        </div>
+
+        <button onclick="resetColors()" style="width: 100%; margin-top: 1rem;" type="button">Reset Colors</button>
+        
+        <hr style="margin: 2rem 0; border: 0; border-top: 1px solid var(--border);">
+        
+        <button onclick="openChangePasswordModal()" style="width: 100%;" type="button">Change Password</button>
+        <br><br>
+        <button onclick="editAbout()" style="width: 100%;" type="button">Edit About Details</button>
+    </div>
+
+    <script>
+        // ==================== STATE MANAGEMENT ====================
+        let sections = [];
+        let aboutData = null;
+        let isUnlocked = false;
+        let draggedEl = null;
+        let currentPage = 'about';
+        let PASSWORD = '8658176508';
+        let pendingAction = null;
+
+        // ==================== INITIALIZATION ====================
+        function init() {
+            loadFromStorage();
+            renderSections();
+            displayAboutData();
+            initColorPickers();
+            setupEventListeners();
+        }
+
+        function setupEventListeners() {
+            // Modal clicks
+            document.querySelectorAll('.modal').forEach(m => {
+                m.onclick = (e) => { if (e.target === m) closeModal(m.id); };
+            });
+
+            // Content editable about fields
+            ['aboutPageTitle', 'aboutPageText', 'displayEmail', 'displayLocation', 'displayGithub', 'displayLinkedin'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('blur', saveAboutInline);
+                }
+            });
+        }
+
+        // ==================== PAGE SWITCHING ====================
+        function switchPage(page) {
+            currentPage = page;
+            document.getElementById('aboutPage').classList.remove('active');
+            document.getElementById('projectsPage').classList.remove('active');
+            
+            if (page === 'about') {
+                document.getElementById('aboutPage').classList.add('active');
+            } else {
+                document.getElementById('projectsPage').classList.add('active');
+            }
+        }
+
+        // ==================== STORAGE ====================
+        function saveToStorage() {
+            localStorage.setItem('portfolio_sections', JSON.stringify(sections));
+            localStorage.setItem('portfolio_about', JSON.stringify(aboutData));
+            localStorage.setItem('portfolio_password', PASSWORD);
+            localStorage.setItem('portfolio_colors', JSON.stringify({
+                fg: getCSS('--fg'),
+                bg: getCSS('--bg'),
+                accent: getCSS('--accent')
+            }));
+        }
+
+        function loadFromStorage() {
+            // Load sections
+            const savedSections = localStorage.getItem('portfolio_sections');
+            if (savedSections) {
+                sections = JSON.parse(savedSections);
+            } else {
+                sections = [{ 
+                    id: 'sec_default', 
+                    name: 'My Projects', 
+                    description: '', 
+                    projects: [] 
+                }];
+                saveToStorage();
+            }
+
+            // Load about data
+            const savedAbout = localStorage.getItem('portfolio_about');
+            if (savedAbout) {
+                aboutData = JSON.parse(savedAbout);
+            } else {
+                aboutData = {
+                    title: 'About Me',
+                    text: 'Click to write about yourself, your experience, skills, and what makes you unique.',
+                    details: {
+                        email: 'your@email.com',
+                        location: 'Your City, Country',
+                        github: 'github.com/yourusername',
+                        linkedin: 'linkedin.com/in/yourprofile'
+                    }
+                };
+                saveToStorage();
+            }
+
+            // Load password
+            const savedPassword = localStorage.getItem('portfolio_password');
+            if (savedPassword) {
+                PASSWORD = savedPassword;
+            }
+
+            // Load colors
+            const savedColors = localStorage.getItem('portfolio_colors');
+            if (savedColors) {
+                const colors = JSON.parse(savedColors);
+                applyColor('--fg', colors.fg, 'textColor');
+                applyColor('--bg', colors.bg, 'bgColor');
+                applyColor('--accent', colors.accent, 'accentColor');
+            }
+        }
+
+        function saveAboutInline() {
+            if (!aboutData) aboutData = { details: {} };
+            
+            aboutData.title = document.getElementById('aboutPageTitle').textContent;
+            aboutData.text = document.getElementById('aboutPageText').textContent;
+            aboutData.details.email = document.getElementById('displayEmail').textContent;
+            aboutData.details.location = document.getElementById('displayLocation').textContent;
+            aboutData.details.github = document.getElementById('displayGithub').textContent;
+            aboutData.details.linkedin = document.getElementById('displayLinkedin').textContent;
+            
+            saveToStorage();
+        }
+
+        // ==================== CSS UTILITIES ====================
+        function getCSS(prop) {
+            return getComputedStyle(document.documentElement).getPropertyValue(prop).trim();
+        }
+
+        function setCSS(prop, val) {
+            document.documentElement.style.setProperty(prop, val);
+        }
+
+        function applyColor(cssProp, color, inputId) {
+            if (color) {
+                setCSS(cssProp, color);
+                if (cssProp === '--accent') {
+                    setCSS('--accent-dim', color + '33');
+                    document.getElementById('accentPreview').style.background = color;
+                }
+                if (cssProp === '--fg') {
+                    document.getElementById('textPreview').style.background = color;
+                }
+                if (cssProp === '--bg') {
+                    setCSS('--card-bg', color);
+                    document.getElementById('bgPreview').style.background = color;
+                }
+                
+                const input = document.getElementById(inputId);
+                if (input) input.value = color;
+            }
+        }
+
+        function initColorPickers() {
+            document.getElementById('textColor').onchange = (e) => {
+                requireAuth(() => {
+                    applyColor('--fg', e.target.value, 'textColor');
+                    saveToStorage();
+                });
+            };
+            
+            document.getElementById('bgColor').onchange = (e) => {
+                requireAuth(() => {
+                    applyColor('--bg', e.target.value, 'bgColor');
+                    saveToStorage();
+                });
+            };
+            
+            document.getElementById('accentColor').onchange = (e) => {
+                requireAuth(() => {
+                    applyColor('--accent', e.target.value, 'accentColor');
+                    saveToStorage();
+                });
+            };
+        }
+
+        function resetColors() {
+            requireAuth(() => {
+                applyColor('--fg', '#f0f0f0', 'textColor');
+                applyColor('--bg', '#0a0a0a', 'bgColor');
+                applyColor('--accent', '#00ff41', 'accentColor');
+                saveToStorage();
+                showNotif('Colors Reset');
+            });
+        }
+
+        // ==================== AUTH ====================
+        function requireAuth(action) {
+            if (isUnlocked) {
+                action();
+            } else {
+                pendingAction = action;
+                openModal('passwordModal');
+                setTimeout(() => document.getElementById('passwordInput').focus(), 100);
+            }
+        }
+
+        document.getElementById('passwordForm').onsubmit = (e) => {
+            e.preventDefault();
+            const input = document.getElementById('passwordInput').value;
+            if (input === PASSWORD) {
+                isUnlocked = true;
+                closeModal('passwordModal');
+                e.target.reset();
+                showNotif('Admin Unlocked');
+                enableEditing();
+                if (pendingAction) {
+                    pendingAction();
+                    pendingAction = null;
+                }
+            } else {
+                showNotif('Incorrect Password', true);
+                document.getElementById('passwordInput').value = '';
+            }
+        };
+
+        function enableEditing() {
+            document.getElementById('aboutPageTitle').contentEditable = true;
+            document.getElementById('aboutPageText').contentEditable = true;
+            document.getElementById('displayEmail').contentEditable = true;
+            document.getElementById('displayLocation').contentEditable = true;
+            document.getElementById('displayGithub').contentEditable = true;
+            document.getElementById('displayLinkedin').contentEditable = true;
+        }
+
+        // ==================== CHANGE PASSWORD ====================
+        function openChangePasswordModal() {
+            requireAuth(() => openModal('changePasswordModal'));
+        }
+
+        document.getElementById('changePasswordForm').onsubmit = (e) => {
+            e.preventDefault();
+            const current = document.getElementById('currentPassInput').value;
+            const newPass = document.getElementById('newPassInput').value;
+            
+            if (current === PASSWORD) {
+                PASSWORD = newPass;
+                saveToStorage();
+                closeModal('changePasswordModal');
+                e.target.reset();
+                showNotif('Password Updated');
+            } else {
+                showNotif('Incorrect Current Password', true);
+            }
+        };
+
+        // ==================== DISPLAY ABOUT DATA ====================
+        function displayAboutData() {
+            if (!aboutData) return;
+            if (!aboutData.details) aboutData.details = {};
+
+            document.getElementById('aboutPageTitle').textContent = aboutData.title || 'About Me';
+            document.getElementById('aboutPageText').textContent = aboutData.text || '';
+            
+            const fields = ['email', 'location', 'github', 'linkedin'];
+            fields.forEach(f => {
+                const el = document.getElementById(`display${f.charAt(0).toUpperCase() + f.slice(1)}`);
+                if (el) el.textContent = aboutData.details[f] || '';
+            });
+        }
+
+        // ==================== EDIT ABOUT ====================
+        function editAbout() {
+            requireAuth(() => {
+                document.getElementById('aboutTitleInput').value = aboutData.title || '';
+                document.getElementById('aboutTextInput').value = aboutData.text || '';
+                document.getElementById('aboutEmailInput').value = aboutData.details.email || '';
+                document.getElementById('aboutLocationInput').value = aboutData.details.location || '';
+                document.getElementById('aboutGithubInput').value = aboutData.details.github || '';
+                document.getElementById('aboutLinkedinInput').value = aboutData.details.linkedin || '';
+                openModal('aboutModal');
+            });
+        }
+
+        document.getElementById('aboutForm').onsubmit = (e) => {
+            e.preventDefault();
+            aboutData.title = document.getElementById('aboutTitleInput').value;
+            aboutData.text = document.getElementById('aboutTextInput').value;
+            aboutData.details.email = document.getElementById('aboutEmailInput').value;
+            aboutData.details.location = document.getElementById('aboutLocationInput').value;
+            aboutData.details.github = document.getElementById('aboutGithubInput').value;
+            aboutData.details.linkedin = document.getElementById('aboutLinkedinInput').value;
+            
+            saveToStorage();
+            displayAboutData();
+            closeModal('aboutModal');
+            showNotif('About Updated');
+        };
+
+        // ==================== RENDER SECTIONS ====================
+        function renderSections() {
+            const container = document.getElementById('sectionsContainer');
+            container.innerHTML = '';
+
+            sections.forEach((section, idx) => {
+                const div = document.createElement('div');
+                div.className = 'section-container';
+                div.draggable = true;
+                div.dataset.id = section.id;
+                div.style.animationDelay = `${idx * 0.1}s`;
+
+                // Projects HTML
+                const projectsHTML = section.projects.map((p, i) => `
+                    <div class="project-card" style="animation: fadeIn 0.5s ease ${i * 0.05}s backwards;">
+                        <div class="project-actions">
+                            <button class="delete-btn" onclick="deleteProject('${section.id}', '${p.id}')">Delete</button>
+                        </div>
+                        <div class="project-thumbnail">
+                            ${p.thumbnail ? 
+                                `<img src="${p.thumbnail}" alt="${escapeHtml(p.name)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                 <div class="project-thumbnail-placeholder" style="display:none">🖼️</div>` 
+                                : `<div class="project-thumbnail-placeholder">🖼️</div>`
+                            }
+                        </div>
+                        <div class="project-content">
+                            <h3>${escapeHtml(p.name)}</h3>
+                            <div class="project-url">${escapeHtml(p.url)}</div>
+                            <div class="project-description">${escapeHtml(p.description || 'No description')}</div>
+                            <div class="project-meta">
+                                ${p.tags.map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                div.innerHTML = `
+                    <div class="section-header">
+                        <div class="section-title">
+                            <span class="drag-handle">☰</span>
+                            <span class="section-title-text" contenteditable="false">${escapeHtml(section.name)}</span>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="icon-btn" onclick="deleteSection('${section.id}')">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="projects-scroll">
+                        ${projectsHTML}
+                        <div class="add-project-card" onclick="openProjectModal('${section.id}')">
+                            <div class="add-project-icon">+</div>
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(div);
+
+                // Drag and drop
+                div.addEventListener('dragstart', handleDragStart);
+                div.addEventListener('dragover', handleDragOver);
+                div.addEventListener('drop', handleDrop);
+                div.addEventListener('dragend', handleDragEnd);
+            });
+        }
+
+        // ==================== DRAG AND DROP ====================
+        function handleDragStart(e) {
+            if (!isUnlocked) {
+                e.preventDefault();
+                requireAuth(() => {});
+                return;
+            }
+            draggedEl = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+
+        function handleDrop(e) {
+            if (e.stopPropagation) e.stopPropagation();
+            if (draggedEl !== this) {
+                const draggedId = draggedEl.dataset.id;
+                const targetId = this.dataset.id;
+                
+                const draggedIdx = sections.findIndex(s => s.id === draggedId);
+                const targetIdx = sections.findIndex(s => s.id === targetId);
+                
+                const [removed] = sections.splice(draggedIdx, 1);
+                sections.splice(targetIdx, 0, removed);
+                
+                saveToStorage();
+                renderSections();
+            }
+            return false;
+        }
+
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+        }
+
+        // ==================== SECTIONS ====================
+        document.getElementById('sectionForm').onsubmit = (e) => {
+            e.preventDefault();
+            const name = document.getElementById('sectionName').value;
+            const description = document.getElementById('sectionDescription').value;
+            
+            sections.push({
+                id: 'sec_' + Date.now(),
+                name: name,
+                description: description,
+                projects: []
+            });
+            
+            saveToStorage();
+            renderSections();
+            closeModal('sectionModal');
+            e.target.reset();
+            showNotif('Section Created');
+        };
+
+        function deleteSection(sectionId) {
+            requireAuth(() => {
+                if (confirm('Delete this section and all its projects?')) {
+                    sections = sections.filter(s => s.id !== sectionId);
+                    saveToStorage();
+                    renderSections();
+                    showNotif('Section Deleted');
+                }
+            });
+        }
+
+        // ==================== PROJECTS ====================
+        function openProjectModal(sectionId) {
+            requireAuth(() => {
+                document.getElementById('currentSectionId').value = sectionId;
+                openModal('projectModal');
+            });
+        }
+
+        function updateProjectTypeLabel() {
+            const type = document.getElementById('projectType').value;
+            document.getElementById('urlLabel').textContent = type === 'github' ? 'GitHub URL *' : 'Website URL *';
+        }
+
+        document.getElementById('projectForm').onsubmit = (e) => {
+            e.preventDefault();
+            const sectionId = document.getElementById('currentSectionId').value;
+            const section = sections.find(s => s.id === sectionId);
+            
+            if (section) {
+                const tags = document.getElementById('projectTags').value
+                    .split(',')
+                    .map(t => t.trim())
+                    .filter(t => t);
+                
+                section.projects.push({
+                    id: 'proj_' + Date.now(),
+                    type: document.getElementById('projectType').value,
+                    name: document.getElementById('projectName').value,
+                    url: document.getElementById('projectUrl').value,
+                    description: document.getElementById('projectDescription').value,
+                    tags: tags,
+                    thumbnail: document.getElementById('projectThumbnail').value
+                });
+                
+                saveToStorage();
+                renderSections();
+                closeModal('projectModal');
+                e.target.reset();
+                showNotif('Project Added');
+            }
+        };
+
+        function deleteProject(sectionId, projectId) {
+            requireAuth(() => {
+                if (confirm('Delete this project?')) {
+                    const section = sections.find(s => s.id === sectionId);
+                    if (section) {
+                        section.projects = section.projects.filter(p => p.id !== projectId);
+                        saveToStorage();
+                        renderSections();
+                        showNotif('Project Deleted');
+                    }
+                }
+            });
+        }
+
+        // ==================== BACKUP & RESTORE ====================
+        function exportJSON() {
+            const data = {
+                sections: sections,
+                aboutData: aboutData,
+                colors: {
+                    text: getCSS('--fg'),
+                    bg: getCSS('--bg'),
+                    accent: getCSS('--accent')
+                }
+            };
+            const content = JSON.stringify(data, null, 2);
+            downloadFile(content, 'portfolio-backup.json', 'application/json');
+            showNotif('JSON Exported');
+        }
+
+        function exportTOML() {
+            const data = {
+                sections: sections,
+                aboutData: aboutData,
+                colors: {
+                    text: getCSS('--fg'),
+                    bg: getCSS('--bg'),
+                    accent: getCSS('--accent')
+                }
+            };
+            const content = convertToTOML(data);
+            downloadFile(content, 'portfolio-backup.toml', 'text/plain');
+            showNotif('TOML Exported');
+        }
+
+        function importBackup() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json,.toml';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const content = event.target.result;
+                        let data;
+                        
+                        if (file.name.endsWith('.json')) {
+                            data = JSON.parse(content);
+                        } else if (file.name.endsWith('.toml')) {
+                            data = parseTOML(content);
+                        } else {
+                            throw new Error('Invalid format');
+                        }
+
+                        if (confirm('Replace current data with backup?')) {
+                            if (data.sections) sections = data.sections;
+                            if (data.aboutData) aboutData = data.aboutData;
+                            
+                            if (data.colors) {
+                                applyColor('--fg', data.colors.text, 'textColor');
+                                applyColor('--bg', data.colors.bg, 'bgColor');
+                                applyColor('--accent', data.colors.accent, 'accentColor');
+                            }
+                            
+                            saveToStorage();
+                            displayAboutData();
+                            renderSections();
+                            closeModal('backupModal');
+                            showNotif('Backup Restored');
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        showNotif('Import Failed', true);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type: type });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // ==================== TOML CONVERSION ====================
+        function convertToTOML(data) {
+            let t = `# Portfolio Backup\n# Created: ${new Date().toISOString()}\n\n`;
+            
+            if (data.colors) {
+                t += `[colors]\n`;
+                t += `text = "${data.colors.text}"\n`;
+                t += `bg = "${data.colors.bg}"\n`;
+                t += `accent = "${data.colors.accent}"\n\n`;
+            }
+
+            if (data.aboutData) {
+                t += `[about]\n`;
+                t += `title = "${escapeToml(data.aboutData.title)}"\n`;
+                t += `text = """\n${data.aboutData.text}\n"""\n`;
+                if (data.aboutData.details) {
+                    t += `[about.details]\n`;
+                    t += `email = "${escapeToml(data.aboutData.details.email || '')}"\n`;
+                    t += `location = "${escapeToml(data.aboutData.details.location || '')}"\n`;
+                    t += `github = "${escapeToml(data.aboutData.details.github || '')}"\n`;
+                    t += `linkedin = "${escapeToml(data.aboutData.details.linkedin || '')}"\n\n`;
+                }
+            }
+
+            data.sections.forEach((sec) => {
+                t += `[[sections]]\n`;
+                t += `id = "${sec.id}"\n`;
+                t += `name = "${escapeToml(sec.name)}"\n`;
+                t += `description = "${escapeToml(sec.description || '')}"\n\n`;
+
+                sec.projects.forEach((proj) => {
+                    t += `[[sections.projects]]\n`;
+                    t += `id = "${proj.id}"\n`;
+                    t += `name = "${escapeToml(proj.name)}"\n`;
+                    t += `type = "${proj.type}"\n`;
+                    t += `url = "${escapeToml(proj.url)}"\n`;
+                    t += `description = "${escapeToml(proj.description || '')}"\n`;
+                    t += `thumbnail = "${escapeToml(proj.thumbnail || '')}"\n`;
+                    t += `tags = [${proj.tags.map(tag => `"${escapeToml(tag)}"`).join(', ')}]\n\n`;
+                });
+            });
+            return t;
+        }
+
+        function parseTOML(tomlStr) {
+            const lines = tomlStr.split('\n');
+            const data = { sections: [], aboutData: { details: {} }, colors: {} };
+            let currentSection = null;
+            let currentObj = null;
+            let inMultiline = false;
+            let multiKey = '';
+            let multiVal = '';
+
+            const clean = (s) => s ? s.replace(/\\"/g, '"').replace(/\\n/g, '\n').replace(/\\\\/g, '\\') : '';
+
+            for (let line of lines) {
+                let l = line.trim();
+                if (!l || l.startsWith('#')) continue;
+
+                if (inMultiline) {
+                    if (l.endsWith('"""')) {
+                        multiVal += '\n' + l.substring(0, l.length - 3);
+                        if (currentObj) currentObj[multiKey] = clean(multiVal);
+                        inMultiline = false;
+                        multiKey = '';
+                        multiVal = '';
+                    } else {
+                        multiVal += '\n' + l;
+                    }
+                    continue;
+                }
+
+                if (l.startsWith('[') && l.endsWith(']')) {
+                    const header = l.substring(1, l.length - 1);
+                    
+                    if (header === 'colors') {
+                        currentSection = 'colors';
+                        currentObj = data.colors;
+                    } else if (header === 'about') {
+                        currentSection = 'about';
+                        currentObj = data.aboutData;
+                    } else if (header === 'about.details') {
+                        currentSection = 'about.details';
+                        currentObj = data.aboutData.details;
+                    } else if (header.startsWith('[[')) {
+                        const base = header.substring(2, header.length - 2);
+                        if (base === 'sections') {
+                            currentSection = 'section';
+                            const newSec = { id: 'sec_'+Date.now()+Math.random(), name: 'New', projects: [] };
+                            data.sections.push(newSec);
+                            currentObj = newSec;
+                        } else if (base === 'sections.projects') {
+                            currentSection = 'project';
+                            const proj = { id: 'proj_'+Date.now()+Math.random(), tags: [] };
+                            if (data.sections.length > 0) {
+                                data.sections[data.sections.length-1].projects.push(proj);
+                                currentObj = proj;
+                            }
+                        }
+                    }
+                    continue;
+                }
+
+                const eqIdx = l.indexOf('=');
+                if (eqIdx === -1) continue;
+                
+                let key = l.substring(0, eqIdx).trim();
+                let val = l.substring(eqIdx + 1).trim();
+
+                if (val.startsWith('"""')) {
+                    multiKey = key;
+                    if (val.endsWith('"""') && val.length > 6) {
+                        val = val.substring(3, val.length - 3);
+                        if (currentObj) currentObj[key] = clean(val);
+                        multiKey = '';
+                    } else {
+                        multiVal = val.substring(3);
+                        inMultiline = true;
+                    }
+                    continue;
+                }
+
+                if (val.startsWith('"') && val.endsWith('"')) {
+                    val = val.substring(1, val.length - 1);
+                    val = clean(val);
+                } else if (val.startsWith('[') && val.endsWith(']')) {
+                    val = val.substring(1, val.length - 1)
+                        .split(',')
+                        .map(v => v.trim().replace(/^"|"$/g, ''))
+                        .map(v => clean(v));
+                }
+
+                if (currentObj) currentObj[key] = val;
+            }
+            
+            return data;
+        }
+
+        function escapeToml(str) {
+            if (!str) return '';
+            return str.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+        }
+
+        // ==================== MODAL UTILITIES ====================
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        window.toggleOptions = () => {
+            const panel = document.getElementById('optionsPanel');
+            if (panel.classList.contains('active')) {
+                panel.classList.remove('active');
+            } else {
+                requireAuth(() => panel.classList.add('active'));
+            }
+        };
+
+        // ==================== NOTIFICATION ====================
+        function showNotif(msg, isError = false) {
+            const notif = document.createElement('div');
+            notif.className = 'notification' + (isError ? ' error' : '');
+            notif.textContent = msg;
+            document.getElementById('notification-area').appendChild(notif);
+            setTimeout(() => notif.remove(), 3000);
+        }
+
+        // ==================== UTILITIES ====================
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ==================== START ====================
+        init();
+    </script>
+</body>
+</html>
